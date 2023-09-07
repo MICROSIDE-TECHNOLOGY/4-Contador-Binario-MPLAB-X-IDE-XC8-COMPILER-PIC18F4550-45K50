@@ -1,6 +1,6 @@
 /*
  * File:   main.c
- * Author: Enrique
+ * Author: Microside Technology
  *
  * Created on 27 de noviembre de 2020, 12:41 AM
  */
@@ -65,27 +65,24 @@
 #include <pic18f4550.h>
 
 unsigned char cont = 0;
-void InitPorts(void);
 
 void main(void) {
-    InitPorts();
-    while (1) {
-        if (PORTAbits.RA2 == 0) {
-            cont++;
-            LATB = cont;
-            __delay_ms(100);
 
-            while (PORTAbits.RA2 == 0); //Mientras el botón se mantenga igual a cero
-            __delay_ms(100); //Retardo
+    ADCON1bits.PCFG = 0xF;              // Configura los pines como digitales
+    LATA = 0;                           // Establece 0 en los puertos A y B
+    LATB = 0;
+    TRISB = 0;                          // Configura el puerto B como salidas
+    TRISAbits.RA2 = 1;                  // Configura A2 como entrada
+
+    while (1) {
+        if (PORTAbits.RA2 == 0) {       // Al presionar el botón
+            cont++;                     // Incrementa el contador
+            LATB = cont;                // Se muestra el valor por el puerto B
+            __delay_ms(100);            // Retardo (evita el efecto rebote)
+
+            while (PORTAbits.RA2 == 0); // Esperar mientras el botón está presionado
+            __delay_ms(100);            
         }
     }
     return;
-}
-
-void InitPorts(void) {
-    ADCON1bits.PCFG = 0xF;
-    LATA = 0;
-    LATB = 0;
-    TRISB = 0;
-    TRISAbits.RA2 = 1;
 }
